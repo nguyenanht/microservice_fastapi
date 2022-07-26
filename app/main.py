@@ -1,9 +1,9 @@
-from fastapi import FastAPI, APIRouter, Query
+from fastapi import FastAPI, APIRouter, Query, HTTPException
 
 from app.recipe_data import RECIPES
 from app.schemas import RecipeSearchResults, Recipe, RecipeCreate
 
-from typing import Optional
+from typing import Optional, Any
 
 
 # https://christophergs.com/tutorials/ultimate-fastapi-tutorial-pt-1-hello-world/
@@ -29,14 +29,21 @@ def root() -> dict:
 # This is because FastAPI is coercing the input parameter type
 # based on the function argument type hints. This is a handy way of preventing input errors.
 @api_router.get("/recipe/{recipe_id}", status_code=200, response_model=Recipe)
-def fetch_recipe(*, recipe_id: int) -> dict:
+def fetch_recipe(*, recipe_id: int) -> Any:
     """
     Fetch a single recipe by ID
     """
 
     result = [recipe for recipe in RECIPES if recipe["id"] == recipe_id]
-    if result:
-        return result[0]
+    if not result:
+        # the exception is raised, not returned - you will get a validation
+        # error otherwise.
+        # 2
+        raise HTTPException(
+            status_code=404, detail=f"Recipe with ID {recipe_id} not found"
+        )
+
+    return result[0]
 
 
 # New addition, query parameter
@@ -45,7 +52,7 @@ def fetch_recipe(*, recipe_id: int) -> dict:
 def search_recipes(
     *,
     keyword: Optional[str] = Query(None, min_length=3, example="chicken"),  # 2
-    max_results: Optional[int] = 10
+    max_results: Optional[int] = 10,
 ) -> dict:
     """
     Search for recipes based on label keyword
