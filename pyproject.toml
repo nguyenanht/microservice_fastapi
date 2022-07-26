@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "microservice_fastapi"
+name = "app"
 version = "0.1.0"
 description = "microservice fastapi"
 authors = ["johnathan nguyen <nonosnguyen@gmail.com>"]
@@ -9,6 +9,11 @@ python = "^3.8"
 fastapi = "^0.79.0"
 uvicorn = "^0.18.2"
 Jinja2 = "^3.1.2"
+SQLAlchemy = "^1.4.39"
+alembic = "^1.8.1"
+tenacity = "^8.0.1"
+greenlet = "^1.1.2"
+pydantic = {extras = ["email"], version = "^1.9.1"}
 
 [tool.poetry.dev-dependencies]
 
