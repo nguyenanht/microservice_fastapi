@@ -1,10 +1,14 @@
-from fastapi import FastAPI, APIRouter, Query, HTTPException
+from fastapi import FastAPI, APIRouter, Query, HTTPException, Request
+from fastapi.templating import Jinja2Templates
 
 from app.recipe_data import RECIPES
 from app.schemas import RecipeSearchResults, Recipe, RecipeCreate
 
 from typing import Optional, Any
+from pathlib import Path
 
+BASE_PATH = Path(__file__).resolve().parent
+TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 # https://christophergs.com/tutorials/ultimate-fastapi-tutorial-pt-1-hello-world/
 # 1 We instantiate a FastAPI app object, which is a
@@ -17,11 +21,13 @@ api_router = APIRouter()
 # 3 By adding the @api_router.get("/", status_code=200)
 # decorator to the root function, we define a basic GET endpoint for our API.
 @api_router.get("/", status_code=200)
-def root() -> dict:
+def root(request: Request) -> dict:
     """
-    Root Get
+    Root GET
     """
-    return {"msg": "Hello, World!"}
+    return TEMPLATES.TemplateResponse(
+        "index.html", {"request": request, "recipes": RECIPES},
+    )
 
 
 # New addition, path parameter
