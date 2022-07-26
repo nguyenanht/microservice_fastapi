@@ -1,5 +1,27 @@
+from typing import Optional
+
 from fastapi import FastAPI, APIRouter
 
+RECIPES = [
+    {
+        "id": 1,
+        "label": "Chicken Vesuvio",
+        "source": "Serious Eats",
+        "url": "http://www.seriouseats.com/recipes/2011/12/chicken-vesuvio-recipe.html",
+    },
+    {
+        "id": 2,
+        "label": "Chicken Paprikash",
+        "source": "No Recipes",
+        "url": "http://norecipes.com/recipe/chicken-paprikash/",
+    },
+    {
+        "id": 3,
+        "label": "Cauliflower and Tofu Curry Recipe",
+        "source": "Serious Eats",
+        "url": "http://www.seriouseats.com/recipes/2011/02/cauliflower-and-tofu-curry-recipe.html",
+    },
+]
 
 # https://christophergs.com/tutorials/ultimate-fastapi-tutorial-pt-1-hello-world/
 # 1 We instantiate a FastAPI app object, which is a
@@ -17,6 +39,40 @@ def root() -> dict:
     Root Get
     """
     return {"msg": "Hello, World!"}
+
+
+# New addition, path parameter
+# https://fastapi.tiangolo.com/tutorial/path-params/
+# This is because FastAPI is coercing the input parameter type
+# based on the function argument type hints. This is a handy way of preventing input errors.
+@api_router.get("/recipe/{recipe_id}", status_code=200)
+def fetch_recipe(*, recipe_id: int) -> dict:
+    """
+    Fetch a single recipe by ID
+    """
+    print(type(recipe_id))  # ADDED
+
+    result = [recipe for recipe in RECIPES if recipe["id"] == recipe_id]
+    if result:
+        return result[0]
+
+
+# New addition, query parameter
+# https://fastapi.tiangolo.com/tutorial/query-params/
+@api_router.get("/search/", status_code=200)
+def search_recipes(
+    keyword: Optional[str] = None, max_results: Optional[int] = 10
+) -> dict:
+    """
+    Search for recipes based on label keyword
+    """
+    if not keyword:
+        # we use Python list slicing to limit results
+        # based on the max_results query parameter
+        return {"results": RECIPES[:max_results]}
+
+    results = filter(lambda recipe: keyword.lower() in recipe["label"].lower(), RECIPES)
+    return {"results": list(results)[:max_results]}
 
 
 # 4 to register the router
