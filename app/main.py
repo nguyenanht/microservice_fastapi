@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 
 from fastapi import FastAPI, APIRouter, Request, Depends
@@ -13,7 +14,7 @@ BASE_PATH = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 root_router = APIRouter()
-app = FastAPI(title="Recipe API")
+app = FastAPI(title="Recipe API", openapi_url="/openapi.json")
 
 
 @root_router.get("/", status_code=200)
@@ -29,6 +30,15 @@ def root(
         "index.html",
         {"request": request, "recipes": recipes},
     )
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
