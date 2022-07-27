@@ -60,7 +60,7 @@ In this tutorial, we will make use of both components, though you can adapt the 
 │  │  └── user.py
 │  └── templates
 │     └── index.html
-├── poetry.lock
+├── poetry.lock_
 ├── prestart.sh
 ├── pyproject.toml
 ├── README.md

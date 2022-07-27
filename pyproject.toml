@@ -12,8 +12,12 @@ Jinja2 = "^3.1.2"
 SQLAlchemy = "^1.4.39"
 alembic = "^1.8.1"
 tenacity = "^8.0.1"
-greenlet = "^1.1.2"
 pydantic = {extras = ["email"], version = "^1.9.1"}
+httpx = "^0.23.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+cffi = "^1.15.1"
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 
